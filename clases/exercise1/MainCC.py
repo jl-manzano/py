@@ -32,6 +32,12 @@ def main():
         print("Account 1 has less balance than Account 2")
     else:
         print("Account 1 has more or equal balance than Account 2")
-        
+
+    ccs = [cc1, cc2]
+    ccs.sort()
+    print("Accounts sorted by balance:")
+    for cc in ccs:
+        print(cc)
+    
 if __name__ == "__main__":
     main()
