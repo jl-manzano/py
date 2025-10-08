@@ -13,14 +13,14 @@
 # Crear también los métodos __str__, __eq__ y __lt__. Se considera que dos artículos son iguales si tienen el mismo nombre. 
 # Los artículos se ordenarán de menor a mayor por el nombre.
 class Articulo:
+    VAT = 21
     def __init__(self, name, price, stock):
         self.name = name
         self.price = price
-        self.vat = 21
         self.stock = stock
     
     def getPVP(self):
-        return self.price * (1 + self.vat / 100)
+        return self.price * (1 + Articulo.VAT / 100)
     
     def getPVPDescuento(self, discount):
         pvp = self.getPVP()
@@ -38,7 +38,7 @@ class Articulo:
         self.stock += quantity
 
     def __str__(self):
-        return f"Name: {self.name}, Price: {self.price}, VAT: {self.vat}%, Stock: {self.stock}"
+        return f"Name: {self.name}, Price: {self.price}, VAT: {Articulo.VAT}, Stock: {self.stock}"
     
     def __eq__(self, other):
         return self.name == other.name

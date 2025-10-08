@@ -1,0 +1,19 @@
+# Diseña una aplicación que pida al usuario su nombre y edad. 
+# Estos datos deben guardarse en el fichero datos.txt. 
+# Si este fichero existe, deben añadirse al final en una nueva línea, 
+# y en caso de no existir, debe crearse.
+f = open('C:\\Users\\jl.manzano\\Documents\\GitHub\\py\\ficheros\\exercise3\\datos.txt', 'a', encoding="utf8")
+nombre = input("Introduce tu nombre: ")
+edad_valida = False
+
+while not edad_valida:
+    try:
+        edad = int(input("Introduce tu edad: ").strip())
+        edad_valida = True
+    except:
+        print("Por favor, introduce una edad válida.")
+
+f.write(f"{nombre}, {edad}\n")
+print("\nDatos almacenados con éxito en 'datos.txt'")
+f.close()
+

@@ -1,0 +1,10 @@
+juan 22 1.77
+luis 21 1.80
+pedro 20 1.73
+ana 23 1.65
+carlos 24 1.82
+sofia 22 1.70
+marcos 21 1.75
+lucia 19 1.68
+roberto 25 1.80
+marta 20 1.72

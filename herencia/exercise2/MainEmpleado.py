@@ -20,5 +20,4 @@ def main():
     tech = Tecnico("Pablo")
     print(tech)
 
-if __name__ == "__main__":
-    main()
+main()

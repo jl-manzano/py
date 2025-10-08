@@ -35,5 +35,4 @@ def main():
     for book in books:
         print(book)
 
-if __name__ == "__main__":
-    main()
+main()

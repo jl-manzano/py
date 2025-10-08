@@ -12,6 +12,10 @@
 # Las cuentas corrientes se ordenarán de menor a mayor 
 # por el saldo.
 class CuentaCorriente:
+    def __init__(self, dni, initial_balance):
+        self.dni = dni
+        self.balance = initial_balance
+
     def __init__(self, dni, initial_balance, name = ""):
         self.dni = dni
         self.name = name

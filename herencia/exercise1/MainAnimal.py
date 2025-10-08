@@ -7,5 +7,4 @@ def main():
     print(gato)
     print(perro)
 
-if __name__ == "__main__":
-    main()
+main()

@@ -39,5 +39,4 @@ def main():
     for cc in ccs:
         print(cc)
     
-if __name__ == "__main__":
-    main()
+main()
