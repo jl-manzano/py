@@ -43,11 +43,3 @@ def main():
     print("Books sorted by author:")
     for book in books:
         print(book)
-
-<<<<<<< HEAD
-# Ejecutamos main
-if __name__ == "__main__":
-    main()
-=======
-main()
->>>>>>> e7d2db3ce57d20ba6ca78955d31985630573f29f

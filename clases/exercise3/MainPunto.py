@@ -1,7 +1,6 @@
 # Importamos clase Punto
 from Punto import Punto
 
-<<<<<<< HEAD
 # Creamos dos puntos
 p1 = Punto(3, 4)
 p2 = Punto(0, 0)
@@ -37,7 +36,7 @@ print(p2)
 
 # Última distancia
 print("Distance:", p1.distancia(p2))
-=======
+
 def main():
     p1 = Punto(3, 4)
     p2 = Punto(0, 0)
@@ -62,4 +61,3 @@ def main():
     print("Distance:", p1.distancia(p2))
 
 main()
->>>>>>> e7d2db3ce57d20ba6ca78955d31985630573f29f

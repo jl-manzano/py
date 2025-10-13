@@ -1,7 +1,6 @@
 # Importamos clase Articulo
 from Articulo import Articulo
 
-<<<<<<< HEAD
 # Creamos varios artículos
 art1 = Articulo("Laptop", 1000, 10)
 art2 = Articulo("Smartphone", 500, 20)
@@ -23,7 +22,7 @@ if art1.vender(5):
     print("Sale successful")
 else:
     print("Not enough stock for sale")
-=======
+
 def main():
     art1 = Articulo("Laptop", 1000, 10)
     art2 = Articulo("Smartphone", 500, 20)
@@ -41,14 +40,12 @@ def main():
         print("Sale successful")
     else:
         print("Not enough stock for sale")
->>>>>>> e7d2db3ce57d20ba6ca78955d31985630573f29f
 
     if art2.vender(25):
         print("Sale successful")
     else:
         print("Not enough stock for sale")
 
-<<<<<<< HEAD
 # Almacenamos en art3
 art3.almacenar(10)
 
@@ -69,7 +66,7 @@ articles.sort()
 print("Articles sorted by name:")
 for art in articles:
     print(art)
-=======
+
     art3.almacenar(10)
     print(art1)
     print(art2)
@@ -87,4 +84,3 @@ for art in articles:
         print(art)
 
 main()
->>>>>>> e7d2db3ce57d20ba6ca78955d31985630573f29f

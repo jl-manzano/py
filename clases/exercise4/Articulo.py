@@ -14,11 +14,7 @@
 # Los artículos se ordenarán de menor a mayor por el nombre.
 # Clase que representa un artículo de almacén
 class Articulo:
-<<<<<<< HEAD
-    # Constructor con nombre, precio y stock
-=======
-    VAT = 21
->>>>>>> e7d2db3ce57d20ba6ca78955d31985630573f29f
+
     def __init__(self, name, price, stock):
         self.name = name
         self.price = price
