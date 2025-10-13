@@ -2,18 +2,31 @@
 # Para ello se introduce por teclado una serie de números, para los que se indica: “mayor” o “menor”, 
 # según sea mayor o menor con respecto al número secreto. El proceso termina cuando el usuario acierta 
 # o cuando se rinde (introduciendo un -1).
+# Importamos random
 import random
+
+# Generamos número secreto
 rand = random.randint(1, 100)
-#print(numero_secreto)
-numero_usuario = int(input("Adivina el número secreto entre 1 y 100 (o introduce -1 para rendirte): "))
-while (numero_usuario != rand and numero_usuario != -1):
-    if (numero_usuario < rand):
+
+# Pedimos intento del usuario
+numero_usuario = int(input("Adivina el número (o -1 para rendirte): "))
+
+# Mientras no acierte ni se rinda
+while numero_usuario != rand and numero_usuario != -1:
+    # Si el número es menor
+    if numero_usuario < rand:
+        # Indicamos que es mayor
         print("El número secreto es mayor.")
     else:
+        # Indicamos que es menor
         print("El número secreto es menor.")
-    numero_usuario = int(input("Adivina el número secreto entre 1 y 100 (o introduce -1 para rendirte): "))
+    # Pedimos nuevo intento
+    numero_usuario = int(input("Adivina el número (o -1 para rendirte): "))
 
-if (numero_usuario == rand):
+# Si acierta
+if numero_usuario == rand:
+    # Mensaje de acierto
     print("¡Felicidades! Has acertado el número secreto.")
 else:
+    # Mensaje de rendición
     print(f"Te has rendido. El número secreto era {rand}.")

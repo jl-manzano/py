@@ -18,13 +18,16 @@
 # Crear también los métodos __str__, __eq__ y __lt__. 
 # Se considera que dos  libros son iguales si tienen el mismo título y el mismo autor. 
 # Los libros se ordenarán de menor a mayor por el nombre del autor.
+# Clase Libro
 class Libro:
+    # Constructor con todos los atributos
     def __init__(self, title, author, total_copies, borrowed_copies):
         self.title = title
         self.author = author
         self.total_copies = total_copies
         self.borrowed_copies = borrowed_copies
 
+    # Realiza préstamo si hay ejemplares
     def prestamo(self):
         res = True
         if self.borrowed_copies < self.total_copies:
@@ -33,6 +36,7 @@ class Libro:
             res = False
         return res
     
+    # Devuelve libro si alguno está prestado
     def devolucion(self):
         res = True
         if self.borrowed_copies > 0:
@@ -41,11 +45,14 @@ class Libro:
             res = False
         return res
     
+    # Mostrar libro
     def __str__(self):
         return f"Title: {self.title}, Author: {self.author}, Total Copies: {self.total_copies}, Borrowed Copies: {self.borrowed_copies}"
     
+    # Comparar si son iguales (título y autor)
     def __eq__(self, other):
         return self.title == other.title and self.author == other.author
     
+    # Ordenar por autor
     def __lt__(self, other):
         return self.author < other.author

@@ -21,5 +21,4 @@ def main():
     for prod in productos:
         print(prod)
 
-if __name__ == "__main__":
-    main()
+main()

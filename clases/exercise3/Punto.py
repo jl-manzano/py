@@ -9,22 +9,27 @@
 # Ejemplo: Si el punto (1,1) se desplaza (2,5) entonces estará en (3,6).
 # distancia(punto): Calcula y devuelve la distancia entre el propio objeto (self) 
 # y otro objeto (punto) que se pasa como parámetro (distancia entre dos coordenadas).
+# Clase que representa un punto 2D
 class Punto:
+    # Constructor con x e y
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
+    # Representación tipo (x, y)
     def __str__(self):
         return f"({self.x}, {self.y})"
     
+    # Establece nuevas coordenadas
     def setXY(self, x, y):
         self.x = x
         self.y = y
     
+    # Desplaza el punto
     def desplaza(self, dx, dy):
         self.x += dx
         self.y += dy
     
+    # Calcula distancia a otro punto
     def distancia(self, punto):
         return ((self.x - punto.x) ** 2 + (self.y - punto.y) ** 2) ** 0.5
-

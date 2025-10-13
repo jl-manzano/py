@@ -12,20 +12,28 @@
 # cantidad ‘x’. La cantidad a almacenar se pasará como argumento.
 # Crear también los métodos __str__, __eq__ y __lt__. Se considera que dos artículos son iguales si tienen el mismo nombre. 
 # Los artículos se ordenarán de menor a mayor por el nombre.
+# Clase que representa un artículo de almacén
 class Articulo:
+<<<<<<< HEAD
+    # Constructor con nombre, precio y stock
+=======
+    VAT = 21
+>>>>>>> e7d2db3ce57d20ba6ca78955d31985630573f29f
     def __init__(self, name, price, stock):
         self.name = name
         self.price = price
-        self.vat = 21
         self.stock = stock
     
+    # Precio con IVA
     def getPVP(self):
-        return self.price * (1 + self.vat / 100)
+        return self.price * (1 + Articulo.VAT / 100)
     
+    # Precio con descuento
     def getPVPDescuento(self, discount):
         pvp = self.getPVP()
         return pvp * (1 - discount / 100)
     
+    # Vender una cantidad
     def vender(self, quantity):
         res = True
         if quantity <= self.stock:
@@ -34,14 +42,18 @@ class Articulo:
             res = False
         return res
     
+    # Añadir al stock
     def almacenar(self, quantity):
         self.stock += quantity
 
+    # Representación en string
     def __str__(self):
-        return f"Name: {self.name}, Price: {self.price}, VAT: {self.vat}%, Stock: {self.stock}"
+        return f"Name: {self.name}, Price: {self.price}, VAT: {Articulo.VAT}, Stock: {self.stock}"
     
+    # Comparar si son iguales (por nombre)
     def __eq__(self, other):
         return self.name == other.name
     
+    # Ordenar por nombre
     def __lt__(self, other):
         return self.name < other.name

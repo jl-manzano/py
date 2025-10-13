@@ -13,13 +13,17 @@
 # En el caso de Perro, además del constructor, definirá los siguientes métodos:
 # habla: Devolverá “Guau”.
 #__str__: Primero escribirá “Soy un perro” y a continuación la misma cadena que el padre.
+# Creamos clase Animal
 class Animal:
+    # Constructor con nombre y patas
     def __init__(self, name, count_legs):
         self.name = name
         self.count_legs = count_legs
 
+    # Método habla vacío
     def habla(self):
         return ''
     
+    # Método para representar en string
     def __str__(self):
         return f"Me llamo {self.name}, tengo {self.count_legs} patas y sueno así: {self.habla()}"
