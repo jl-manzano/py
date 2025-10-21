@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -25,3 +25,16 @@ def get_user(id_user: int):
              if user.id==id_user]
 
     return users[0] if len(users) != 0 else {"error" : "User not found"}
+
+def search_user(id: int):
+    # buscamos usuario por id en la lista
+    # devuelve una lista vacía si no encuentra nada
+    # devuelve una lista con el usuario encontrado
+    users = [user for user in users_list if user.id == id]
+
+    # devolvemos la primera posición de la lista si encuentra algo
+    # devolvemos un diccionario con el error si no encuentra usuario
+    if not users:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return users[0]
