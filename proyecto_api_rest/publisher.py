@@ -1,17 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
 
 # entidad editorial
 class Publisher(BaseModel):
-    id:int
-    cif:str
-    razonSocial:str
-    direccion:str
-    web:str
-    correo:str
-    telefono:str
+    id: int
+    cif: str
+    razonSocial: str
+    direccion: str
+    web: str
+    correo: str
+    telefono: str
 
 # lista de editoriales
 publishers_list = [
@@ -20,62 +20,56 @@ publishers_list = [
     Publisher(id=3, cif="C34567890", razonSocial="Penguin Random House", direccion="Avenida de la Vega, 15, 28108 Alcobendas, Madrid, España", web="https://www.penguinrandomhousegrupoeditorial.com", correo="informacion@penguinrandomhouse.es", telefono="+34 91 559 75 00"),
 ]
 
+# obtener todas las editoriales
 @app.get("/publishers")
-def publishers():
+def get_publishers():
     return publishers_list
 
+# buscar por id
 @app.get("/publishers/{id_publisher}")
 def get_publisher(id_publisher: int):
-    publishers = [publisher for publisher in publishers_list
-                   if publisher.id==id_publisher]
-    if len(publishers) != 0:
-        return publishers[0] 
+    publishers = [p for p in publishers_list if p.id == id_publisher]
+    if publishers:
+        return publishers[0]
     else:
-        {"error" : "Publisher not found"}
+        return {"error": "Publisher not found"}
 
+# buscar por cif
 @app.get("/publishers/cif/{cif_publisher}")
 def get_publisher_by_cif(cif_publisher: str):
-    publishers = [publisher for publisher in publishers_list
-                   if publisher.cif.lower()==cif_publisher.lower()]
-    if len(publishers) != 0:
-        return publishers[0] 
+    publishers = [p for p in publishers_list if p.cif.lower() == cif_publisher.lower()]
+    if publishers:
+        return publishers[0]
     else:
-        {"error" : "Publisher not found"}
+        return {"error": "Publisher not found"}
 
+# buscar por razón social
 @app.get("/publishers/razon_social/{razon_social}")
 def get_publisher_by_razon_social(razon_social: str):
-    publishers = [publisher for publisher in publishers_list
-                   if publisher.razonSocial.lower()==razon_social.lower()]
-    if len(publishers) != 0:
-        return publishers[0] 
+    publishers = [p for p in publishers_list if p.razonSocial.lower() == razon_social.lower()]
+    if publishers:
+        return publishers[0]
     else:
-        {"error" : "Publisher not found"}
+        return {"error": "Publisher not found"}
 
-@app.post ("/publishers", status_code=201, response_model=Publisher)
-def add_Publisher(publisher: Publisher):
-    # Calculamos el siguiente id y se lo 
-    # machacamos a la editorial recibida por parámetro
+# añadir una editorial
+@app.post("/publishers", status_code=201, response_model=Publisher)
+def add_publisher(publisher: Publisher):
     publisher.id = next_id()
-    
-    # Añadimos la editorial a la lista
     publishers_list.append(publisher)
-
-    # Devolvemos la editorial añadido
     return publisher
 
-def next_id():
-    return (max(publishers_list, key=id).id+1)
-
-@app.put("/publishers/{id}")
-def modify_publisher(id:int, publisher:Publisher):
+# modificar editorial
+@app.put("/publishers/{id}", response_model=Publisher)
+def modify_publisher(id: int, publisher: Publisher):
     for index, saved_publisher in enumerate(publishers_list):
         if saved_publisher.id == id:
             publisher.id = id
             publishers_list[index] = publisher
             return publisher
-
     raise HTTPException(status_code=404, detail="Publisher not found")
 
+# eliminar editorial
 @app.delete("/publishers/{id}")
 def remove_publisher(id: int):
     for saved_publisher in publishers_list:
@@ -83,3 +77,10 @@ def remove_publisher(id: int):
             publishers_list.remove(saved_publisher)
             return {}
     raise HTTPException(status_code=404, detail="Publisher not found")
+
+# obtiene el siguiente id
+# Función para obtener el siguiente id
+def next_id():
+    # encuentra el id más grande en la lista y devuelve el siguiente valor
+    return max([publisher.id for publisher in publishers_list], default=0) + 1
+
