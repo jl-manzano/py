@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-app = FastAPI()
+router = APIRouter(prefix="/publishers", tags=["publishers"])
 
 # entidad editorial
 class Publisher(BaseModel):
@@ -21,46 +21,46 @@ publishers_list = [
 ]
 
 # obtener todas las editoriales
-@app.get("/publishers")
+@router.get("/")
 def get_publishers():
     return publishers_list
 
 # buscar por id
-@app.get("/publishers/{id_publisher}")
+@router.get("/{id_publisher}")
 def get_publisher(id_publisher: int):
     publishers = [p for p in publishers_list if p.id == id_publisher]
     if publishers:
         return publishers[0]
     else:
-        return {"error": "Publisher not found"}
+        raise HTTPException(status_code=404, detail="Publisher not found")
 
 # buscar por cif
-@app.get("/publishers/cif/{cif_publisher}")
+@router.get("/cif/{cif_publisher}")
 def get_publisher_by_cif(cif_publisher: str):
     publishers = [p for p in publishers_list if p.cif.lower() == cif_publisher.lower()]
     if publishers:
         return publishers[0]
     else:
-        return {"error": "Publisher not found"}
+        raise HTTPException(status_code=404, detail="Publisher not found")
 
 # buscar por razón social
-@app.get("/publishers/razon_social/{razon_social}")
+@router.get("/razon_social/{razon_social}")
 def get_publisher_by_razon_social(razon_social: str):
     publishers = [p for p in publishers_list if p.razonSocial.lower() == razon_social.lower()]
     if publishers:
         return publishers[0]
     else:
-        return {"error": "Publisher not found"}
+        raise HTTPException(status_code=404, detail="Publisher not found")
 
 # añadir una editorial
-@app.post("/publishers", status_code=201, response_model=Publisher)
+@router.post("/", status_code=201)
 def add_publisher(publisher: Publisher):
     publisher.id = next_id()
     publishers_list.append(publisher)
     return publisher
 
 # modificar editorial
-@app.put("/publishers/{id}", response_model=Publisher)
+@router.put("/{id}", response_model=Publisher)
 def modify_publisher(id: int, publisher: Publisher):
     for index, saved_publisher in enumerate(publishers_list):
         if saved_publisher.id == id:
@@ -70,7 +70,7 @@ def modify_publisher(id: int, publisher: Publisher):
     raise HTTPException(status_code=404, detail="Publisher not found")
 
 # eliminar editorial
-@app.delete("/publishers/{id}")
+@router.delete("/{id}")
 def remove_publisher(id: int):
     for saved_publisher in publishers_list:
         if saved_publisher.id == id:
@@ -79,8 +79,6 @@ def remove_publisher(id: int):
     raise HTTPException(status_code=404, detail="Publisher not found")
 
 # obtiene el siguiente id
-# Función para obtener el siguiente id
 def next_id():
     # encuentra el id más grande en la lista y devuelve el siguiente valor
     return max([publisher.id for publisher in publishers_list], default=0) + 1
-

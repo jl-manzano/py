@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-app = FastAPI()
+router = APIRouter(prefix="/books", tags=["books"])
 
 # entidad libro
 class Book(BaseModel):
@@ -21,46 +21,46 @@ books_list = [
 ]
 
 # obtener todos los libros
-@app.get("/books")
+@router.get("/")
 def get_books():
     return books_list
 
 # buscar por id
-@app.get("/books/{id_book}")
+@router.get("/{id_book}")
 def get_book(id_book: int):
     books = [book for book in books_list if book.id == id_book]
     if books:
         return books[0]
     else:
-        return {"error": "Book not found"}
+        raise HTTPException(status_code=404, detail="Book not found")
 
 # buscar por isbn
-@app.get("/books/isbn/{isbn_book}")
+@router.get("/isbn/{isbn_book}")
 def get_book_by_isbn(isbn_book: str):
     books = [book for book in books_list if book.isbn == isbn_book]
     if books:
         return books[0]
     else:
-        return {"error": "Book not found"}
+        raise HTTPException(status_code=404, detail="Book not found")
 
 # buscar por título
-@app.get("/books/titulo/{titulo_book}")
+@router.get("/titulo/{titulo_book}")
 def get_book_by_titulo(titulo_book: str):
     books = [book for book in books_list if book.titulo.lower() == titulo_book.lower()]
     if books:
         return books[0]
     else:
-        return {"error": "Book not found"}
+        raise HTTPException(status_code=404, detail="Book not found")
 
 # añadir un libro
-@app.post("/books", status_code=201)
+@router.post("/", status_code=201)
 def add_book(book: Book):
     book.id = next_id()
     books_list.append(book)
     return book
 
 # modificar editorial
-@app.put("/books/{id}", response_model=Book)
+@router.put("/{id}", response_model=Book)
 def modify_book(id: int, book: Book):
     for index, saved_book in enumerate(books_list):
         if saved_book.id == id:
@@ -70,7 +70,7 @@ def modify_book(id: int, book: Book):
     raise HTTPException(status_code=404, detail="Book not found")
 
 # eliminar editorial
-@app.delete("/books/{id}")
+@router.delete("/{id}")
 def remove_book(id: int):
     for saved_book in books_list:
         if saved_book.id == id:
