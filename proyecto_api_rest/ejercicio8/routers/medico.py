@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-router = APIRouter(prefix="/physicians", tags="medicos")
+router = APIRouter(prefix="/physicians", tags=["physicians"])
 
 # entidad médico
 class Physician(BaseModel):
