@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from .auth_users import authentication
 
 router = APIRouter(prefix="/physicians", tags=["physicians"])
 
@@ -54,7 +55,7 @@ def get_physician_by_speciality(speciality_physician: str):
     
 # añadir un médico
 @router.post("/", status_code=201)
-def add_physician(physician: Physician):
+def add_physician(physician: Physician, authorized = Depends(authentication)):
     physician.id = next_id()
     physicians_list.append(physician)
     return physician
