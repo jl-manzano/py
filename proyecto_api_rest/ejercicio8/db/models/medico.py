@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 #Entidad physician
 class Physician(BaseModel):
-    id: Optional[str] = None
+    id: Optional[str]
     name: str
     surname: str
     ncolegiado: str

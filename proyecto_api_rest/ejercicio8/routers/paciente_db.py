@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from .auth_users import authentication
-from pymongo import MongoClient
 from bson import ObjectId
 from db.models.paciente import Patient
 from db.client import db_client
@@ -11,101 +9,93 @@ from bson import ObjectId
 
 router = APIRouter(prefix="/patientsdb", tags=["patientsdb"])
 
-# Conexión a MongoDB
-client = MongoClient()
-db = client["healthcare"]
-patients_collection = db["patients"]
+# la siguiente lista pretende simular una base de datos para probar nuestra API
+patients_list = []
 
-# entidad paciente
-class Patient(BaseModel):
-    id: str
-    dni: str
-    apellidos: str
-    nombre: str
-    segsocial: str
-    fnacimiento: str
-    id_medico: str
+@router.get("/", response_model=list[Patient])
+async def patients():
+    # El método find() sin parámetros devuelve todos los registros
+    # de la base de datos
+    return patients_schema(db_client.test.patients.find())
 
-# obtener todos los pacientes
-@router.get("/")
-async def get_patients():
-    patients = list(patients_collection.find({}))
-    for patient in patients:
-        patient["id"] = str(patient["_id"])  # Convertir _id de MongoDB a string
-        del patient["_id"]
-    return patients
+# Método get por id
+@router.get("/{id}", response_model=Patient)
+async def patient(id: str):
+    return search_patient_id(id)
 
-# buscar por id
-@router.get("/{id_patient}")
-async def get_patient_by_id(id_patient: str):
-    patient = patients_collection.find_one({"_id": ObjectId(id_patient)})
-    if patient:
-        patient["id"] = str(patient["_id"])  # Convertir _id de MongoDB a string
-        del patient["_id"]
-        return patient
-    else:
-        raise HTTPException(status_code=404, detail="Patient not found")
 
-# buscar por dni
-@router.get("/dni/{dni_patient}")
-async def get_patient_by_dni(dni_patient: str):
-    patient = patients_collection.find_one({"dni": dni_patient})
-    if patient:
-        patient["id"] = str(patient["_id"])  # Convertir _id de MongoDB a string
-        del patient["_id"]
-        return patient
-    else:
-        raise HTTPException(status_code=404, detail="Patient not found")
-
-# buscar por segsocial
-@router.get("/segsocial/{segsocial_patient}")
-async def get_patient_by_segsocial(segsocial_patient: str):
-    patient = patients_collection.find_one({"segsocial": segsocial_patient})
-    if patient:
-        patient["id"] = str(patient["_id"])  # Convertir _id de MongoDB a string
-        del patient["_id"]
-        return patient
-    else:
-        raise HTTPException(status_code=404, detail="Patient not found")
-
-# buscar por id_medico (para obtener los pacientes asignados a ese médico)
-@router.get("/medico/{id_medico}")
-async def get_patients_by_medico(id_medico: str):
-    patients = list(patients_collection.find({"id_medico": id_medico}))
-    if patients:
-        for patient in patients:
-            patient["id"] = str(patient["_id"])  # Convertir _id de MongoDB a string
-            del patient["_id"]
-        return patients
-    else:
-        raise HTTPException(status_code=404, detail="No patients found for this physician")
-
-# añadir un paciente
-@router.post("/", status_code=201)
+@router.post("/", response_model=Patient, status_code=201)
 async def add_patient(patient: Patient):
-    patient_dict = patient.dict(exclude_unset=True)
-    result = patients_collection.insert_one(patient_dict)
-    patient.id = str(result.inserted_id)
-    return patient
+    #print("dentro de post")
+    if type(search_patient(patient.dni)) == Patient:
+        raise HTTPException(status_code=409, detail="Patient already exists")
+    
+    patient_dict = patient.model_dump()
+    del patient_dict["id"]
+    # Añadimos el usuario a nuestra base de datos
+    # También podemos obtner con inserted_id el id que la base de datos
+    # ha generado para nuestro usuario
+    id= db_client.test.patients.insert_one(patient_dict).inserted_id
 
-# modificar paciente
+    # Añadimos el campo id a nuestro diccionario. Hay que hacerle un cast
+    # a string puesto que el id en base de datos se almacena como un objeto,
+    # no como un string
+    patient_dict["id"] = str(id)
+
+    # La respuesta de nuestro método es el propio usuario añadido
+    # Creamos un objeto de tipo patient a partir del diccionario patient_dict
+    return Patient(**patient_dict)
+    
 @router.put("/{id}", response_model=Patient)
-async def modify_patient(id: str, patient: Patient):
-    patient_dict = patient.dict(exclude_unset=True)
-    result = patients_collection.update_one({"_id": ObjectId(id)}, {"$set": patient_dict})
-    if result.modified_count > 0:
-        updated_patient = patients_collection.find_one({"_id": ObjectId(id)})
-        updated_patient["id"] = str(updated_patient["_id"])
-        del updated_patient["_id"]
-        return updated_patient
-    else:
+async def modify_patient(id: str, new_patient: Patient):
+    # Convertimos el usuario a un diccionario
+    patient_dict = new_patient.model_dump()
+    # Eliminamos el id en caso de que venga porque no puede cambiar
+    del patient_dict["id"]   
+    try:
+        # Buscamos el id en la base de datos y le pasamos el diccionario con los datos
+        # a modificar del usuario
+        db_client.test.patients.find_one_and_replace({"_id":ObjectId(id)}, patient_dict)
+        # Buscamos el objeto en base de datos y lo retornamos, así comprobamos que efectivamente
+        # se ha modificado
+        return search_patient_id(id)    
+    except:
         raise HTTPException(status_code=404, detail="Patient not found")
+    
 
-# eliminar paciente
-@router.delete("/{id}")
-async def remove_patient(id: str):
-    result = patients_collection.delete_one({"_id": ObjectId(id)})
-    if result.deleted_count > 0:
-        return {}
-    else:
+@router.delete("/{id}", response_model=Patient)
+async def delete_patient(id:str):
+    found = db_client.test.patients.find_one_and_delete({"_id":ObjectId(id)})
+
+    if not found:
         raise HTTPException(status_code=404, detail="Patient not found")
+    return Patient(**patient_schema(found))
+   
+# El id de la base de datos es un string, ya no es un entero
+def search_patient_id(id: str):    
+    # Si algo va mal en la búsqueda dentro de la base de datos se lanzará una excepción,
+    # así que la controlamos
+    try:
+        # El id en base de datos no se guarda como un string, sino que es un objeto 
+        # Realizamos la conversión    
+        patient = patient_schema(db_client.test.patients.find_one({"_id":ObjectId(id)}))
+        # Necesitamos convertirlo a un objeto patient. 
+        return Patient(**patient)
+    except:
+        return {"error": "Patient not found"}
+
+def search_patient(dni: str):
+    # La búsqueda me devuelve un objeto del tipo de la base de datos.
+    # Necesitamos convertirlo a un objeto patient. 
+    try:
+        # Si algo va mal en la búsqueda dentro de la base de datos se lanzará una excepción,
+        # así que la controlamos
+        patient = patient_schema(db_client.test.patients.find_one({"dni":dni}))
+        return Patient(**patient)
+    except:
+        return {"error": "Patient not found"}
+
+def next_id():
+    # Calculamos el usuario con el id más alto 
+    # y le sumamos 1 a su id
+    return (max(patient.id for patient in patients_list))+1

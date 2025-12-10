@@ -3,8 +3,7 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
 
 import jwt
-from jwt import PyJWTError
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import PyJWTError
 from pwdlib import PasswordHash
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
