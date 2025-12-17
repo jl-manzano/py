@@ -16,7 +16,7 @@ empleados_list = []
 async def empleados():
     # El método find() sin parámetros devuelve todos los registros
     # de la base de datos
-    return empleados_schema(db_client.test.empleados.find())
+    return empleados_schema(db_client.otherdb.empleados.find())
 
 # Método get por id
 @router.get("/{id}", response_model=Empleado)
@@ -35,7 +35,7 @@ async def add_empleado(empleado: Empleado):
     # Añadimos el usuario a nuestra base de datos
     # También podemos obtner con inserted_id el id que la base de datos
     # ha generado para nuestro usuario
-    id= db_client.test.empleados.insert_one(empleado_dict).inserted_id
+    id= db_client.otherdb.empleados.insert_one(empleado_dict).inserted_id
 
     # Añadimos el campo id a nuestro diccionario. Hay que hacerle un cast
     # a string puesto que el id en base de datos se almacena como un objeto,
@@ -55,7 +55,7 @@ async def modify_empleado(id: str, new_empleado: Empleado):
     try:
         # Buscamos el id en la base de datos y le pasamos el diccionario con los datos
         # a modificar del usuario
-        db_client.test.empleados.find_one_and_replace({"_id":ObjectId(id)}, empleado_dict)
+        db_client.otherdb.empleados.find_one_and_replace({"_id":ObjectId(id)}, empleado_dict)
         # Buscamos el objeto en base de datos y lo retornamos, así comprobamos que efectivamente
         # se ha modificado
         return search_empleado_id(id)    
@@ -65,7 +65,7 @@ async def modify_empleado(id: str, new_empleado: Empleado):
 
 @router.delete("/{id}", response_model=Empleado)
 async def delete_empleado(id:str):
-    found = db_client.test.empleados.find_one_and_delete({"_id":ObjectId(id)})
+    found = db_client.otherdb.empleados.find_one_and_delete({"_id":ObjectId(id)})
 
     if not found:
         raise HTTPException(status_code=404, detail="empleado not found")
@@ -78,7 +78,7 @@ def search_empleado_id(id: str):
     try:
         # El id en base de datos no se guarda como un string, sino que es un objeto 
         # Realizamos la conversión    
-        empleado = empleado_schema(db_client.test.empleados.find_one({"_id":ObjectId(id)}))
+        empleado = empleado_schema(db_client.otherdb.empleados.find_one({"_id":ObjectId(id)}))
         # Necesitamos convertirlo a un objeto empleado. 
         return Empleado(**empleado)
     except:
@@ -90,7 +90,7 @@ def search_empleado(nombre: str, apellidos: str):
     try:
         # Si algo va mal en la búsqueda dentro de la base de datos se lanzará una excepción,
         # así que la controlamos
-        empleado = empleado_schema(db_client.test.empleados.find_one({"nombre":nombre, "apellidos":apellidos}))
+        empleado = empleado_schema(db_client.otherdb.empleados.find_one({"nombre":nombre, "apellidos":apellidos}))
         return Empleado(**empleado)
     except:
         return {"error": "empleado not found"}
