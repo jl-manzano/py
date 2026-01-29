@@ -85,7 +85,7 @@ if __name__ == '__main__':
     ruta_fichero = input("Introduce la ruta al fichero de películas: ").strip()
     
     if not ruta_fichero:
-        ruta_fichero = "C:\Users\portatil\Desktop\j\dam\py\prog_procesos\parte2\peliculas.txt"
+        ruta_fichero = "peliculas.txt"
         print(f"Usando fichero por defecto: {ruta_fichero}")
     
     inicio = time.perf_counter()
